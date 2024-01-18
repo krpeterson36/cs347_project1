@@ -9,11 +9,12 @@
 
 int encrypt(char* encName, char* dest){
     int encFile = open(encName, O_RDONLY);
-    int encDest = open(dest, O_WRONLY|O_CREAT|O_TRUNC, 00700);
-    if(encDest == -1){
+    if(encFile == -1){
         printf("%s", ERROR);
         return -1;
-    }else if(encFile == -1){
+    }
+    int encDest = open(dest, O_WRONLY|O_CREAT|O_TRUNC, 00700);
+    if(encDest == -1){
         printf("%s", ERROR);
         return -1;
     }
@@ -30,11 +31,12 @@ int encrypt(char* encName, char* dest){
 
 int decrypt(char* decName, char* dest){
     int decFile = open(decName, O_RDONLY);
-    int decDest = open(dest, O_CREAT|O_WRONLY|O_TRUNC, 00700);
     if(decFile == -1){
         printf("%s", ERROR);
         return -1;
-    }else if(decDest == -1){
+    }
+    int decDest = open(dest, O_WRONLY|O_CREAT|O_TRUNC, 00700);
+    if(decDest == -1){
         printf("%s", ERROR);
         return -1;
     }
@@ -53,15 +55,11 @@ int main(int argc, char** argv)
 {
 
     char output_file_name[128];    //You may assume that the length of the output file name will not exceed 128 characters.
-    int buff = 0;
-    if(argv[2] == NULL){
-        printf("%s", ERROR);
-        return -1;
-    }else if(argc != 3){
+    if(argc != 3){
         printf("%s", ERROR);
         return -1;
     }
-    strncpy(output_file_name, argv[2], sizeof(argv[2]));
+    strncpy(output_file_name, argv[2], strlen(argv[2]) - 4);
     int opt;
     while((opt = getopt(argc, argv, "e:d:")) != -1){
         switch (opt){
@@ -69,6 +67,7 @@ int main(int argc, char** argv)
                 strcat(output_file_name, "_enc.txt");
                 printf("%s\n", output_file_name);
                 return encrypt(argv[2], output_file_name);
+                break;
             case 'd':
                 strcat(output_file_name, "_dec.txt");
                 return decrypt(argv[2], output_file_name);
