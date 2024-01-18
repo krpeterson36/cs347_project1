@@ -5,23 +5,23 @@
 #include <sys/time.h>
 #include <stdlib.h>
 
-#define ERROR "./filesec -e|-d [filename.txt]"
+#define ERROR "./filesec -e|-d [filename.txt]\n"
 
 int encrypt(char* encName, char* dest){
     int encFile = open(encName, O_RDONLY);
-    int encDest = open(dest, O_CREAT|O_WRONLY|O_TRUNC);
-    if(encFile == -1){
+    int encDest = open(dest, O_WRONLY|O_CREAT|O_TRUNC, 00700);
+    if(encDest == -1){
+        printf("%s", ERROR);
+        return -1;
+    }else if(encFile == -1){
         printf("%s", ERROR);
         return -1;
     }
-    int temp[1];
-    int i;
-    i = read(encFile + 100, temp, 1);
-    write(encDest, temp, 1);
-    while(i != EOF){
-        i = read(encFile + 100, temp, 1);
-        write(encDest, temp, 1);
-        printf("%d\n", i);
+    int unEnc[1];
+    int enc[1];
+    while(read(encFile, unEnc, 1) > 0){ 
+       enc[0] = unEnc[0] + 100;
+       write(encDest, enc, 1);
     }
     close(encFile);
     close(encDest);
@@ -30,23 +30,22 @@ int encrypt(char* encName, char* dest){
 
 int decrypt(char* decName, char* dest){
     int decFile = open(decName, O_RDONLY);
-    int decDest = open(dest, O_CREAT|O_WRONLY|O_TRUNC);
+    int decDest = open(dest, O_CREAT|O_WRONLY|O_TRUNC, 00700);
     if(decFile == -1){
         printf("%s", ERROR);
         return -1;
+    }else if(decDest == -1){
+        printf("%s", ERROR);
+        return -1;
     }
-    int temp[1];
-    int i;
-    i = read(decFile - 100, temp, 1);
-    write(decDest, temp, 1);
-    while(i != EOF){
-        i = read(decFile - 100, temp, 1);
-        write(decDest, temp, 1);
-        printf("%d\n", i);
+    int unDec[1];
+    int dec[1];
+    while(read(decFile, unDec, 1) > 0){
+        dec[0] = unDec[0]-100;
+        write(decDest, dec, 1);
     }
     close(decFile);
     close(decDest);
-    return 0;
     return 0;
 }
 
@@ -62,7 +61,7 @@ int main(int argc, char** argv)
         printf("%s", ERROR);
         return -1;
     }
-    strncpy(output_file_name, argv[2], sizeof(argv[2]) + 1);
+    strncpy(output_file_name, argv[2], sizeof(argv[2]));
     int opt;
     while((opt = getopt(argc, argv, "e:d:")) != -1){
         switch (opt){
