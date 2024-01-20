@@ -11,11 +11,14 @@ int encrypt(char* encName, char* dest){
     int encFile = open(encName, O_RDONLY);
     if(encFile == -1){
         printf("%s", ERROR);
+        close(encFile);
         return -1;
     }
     int encDest = open(dest, O_WRONLY|O_CREAT|O_TRUNC, 00700);
     if(encDest == -1){
         printf("%s", ERROR);
+        close(encFile);
+        close(encDest);
         return -1;
     }
     int unEnc[1];
@@ -59,7 +62,15 @@ int main(int argc, char** argv)
         printf("%s", ERROR);
         return -1;
     }
-    strncpy(output_file_name, argv[2], strlen(argv[2])-4);
+    int i = 0;
+    while(argv[2][i] != '.'){
+        output_file_name[i] = argv[2][i];
+        i++;
+    }
+    while(i < 128){
+        output_file_name[i] = '\0';
+        i++;
+    }
     int opt;
     while((opt = getopt(argc, argv, "e:d:")) != -1){
         switch (opt){
