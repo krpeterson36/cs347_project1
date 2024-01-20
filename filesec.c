@@ -59,7 +59,7 @@ int main(int argc, char** argv)
         printf("%s", ERROR);
         return -1;
     }
-    strncpy(output_file_name, argv[2], strlen(argv[2]) - 4);
+    strncpy(output_file_name, argv[2], strlen(argv[2])-4);
     int opt;
     while((opt = getopt(argc, argv, "e:d:")) != -1){
         switch (opt){
