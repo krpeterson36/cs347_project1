@@ -70,6 +70,7 @@ int main(int argc, char** argv)
                 break;
             case 'd':
                 strcat(output_file_name, "_dec.txt");
+                printf("%s\n", output_file_name);
                 return decrypt(argv[2], output_file_name);
                 break;
             case '?':
