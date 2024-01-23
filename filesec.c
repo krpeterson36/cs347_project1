@@ -6,92 +6,101 @@
 #include <stdlib.h>
 
 #define ERROR "Usage:\n./filesec -e|-d [filename.txt]\n"
-#define BUFFER_SIZE 1000
-#define READ_WRITE_CALLS "Read & Write calls: "
+#define BUFFER_SIZE (1000)
 
-//encrypts the file, returns -1 on failure, 0 on success
-int fileEncrypt(char* encName, char* dest){
+/*Encrypts the file
+ *Takes the name of the input file and the name of the output file as parameters
+ *returns -1 on failure, 0 on success
+ */
+int file_encrypt(char* encrypt_name, char* dest){
 
     //opens the file that we will encrypt
-    int encFile = open(encName, O_RDONLY);
-    if(encFile == -1){
+    int encrypt_file = open(encrypt_name, O_RDONLY);
+    if(encrypt_file == -1){
         write(1, ERROR, sizeof(ERROR));
-        close(encFile);
+        close(encrypt_file);
         return -1;
     }
 
     //opens the target file
-    int encDest = open(dest, O_WRONLY|O_CREAT|O_TRUNC, 00700);
-    if(encDest == -1){
+    int encrypt_destination = open(dest, O_WRONLY|O_CREAT|O_TRUNC, 00700);
+    if(encrypt_destination == -1){
         write(1, ERROR, sizeof(ERROR));
-        close(encFile);
-        close(encDest);
+        close(encrypt_file);
+        close(encrypt_destination);
         return -1;
     }
 
-    //Reads BUFFER_SIZE amount of bytes into the buffer, then encrypts those bytes, then writes those bytes into the destination file. Repeats until no bytes left to read.
+    /*Reads BUFFER_SIZE amount of bytes into the buffer and then encrypts those characters. 
+     *After that it writes those bytes into the destination file. Repeats until no bytes left to read.
+     */
     char buf[BUFFER_SIZE];
     int count = 0;
-    struct timeval startTime, endTime;
-    gettimeofday(&startTime, 0);
+    struct timeval start_time, end_time;
+    gettimeofday(&start_time, 0);
     int q;
-    while((q = read(encFile, buf, BUFFER_SIZE)) > 0){ 
+    while((q = read(encrypt_file, buf, BUFFER_SIZE)) > 0){ 
         for(int i = 0; i < q; i++){
             buf[i] = buf[i] + 100;
         }
-        write(encDest, buf, q);
+        write(encrypt_destination, buf, q);
         count += 2;
     }
-    gettimeofday(&endTime, 0);
-    long startT = (startTime.tv_sec * 1000000) + startTime.tv_usec;
-    long endT = (endTime.tv_sec * 1000000) + endTime.tv_usec;
-    long diff = endT - startT;
+    gettimeofday(&end_time, 0);
+    long start_time_micro = (start_time.tv_sec * 1000000) + start_time.tv_usec;
+    long end_time_micro = (end_time.tv_sec * 1000000) + end_time.tv_usec;
+    long diff = end_time_micro - start_time_micro;
     printf("Read & Write calls: %d\nIt took %ld microseconds\n", count, diff);
-    close(encFile);
-    close(encDest);
+    close(encrypt_file);
+    close(encrypt_destination);
     return 0;
 }
 
-//decrypts the file, returns -1 on failure, 0 on success
-int fileDecrypt(char* decName, char* dest){
+/*Decrypts the file
+ *Takes the name of the input file and the name of the output file as parameters
+ *returns -1 on failure, 0 on success
+ */
+int file_decrypt(char* decrypt_file_source, char* dest){
 
     //opens source file
-    int decFile = open(decName, O_RDONLY);
-    if(decFile == -1){
+    int decrypt_file_source_name = open(decrypt_file_source, O_RDONLY);
+    if(decrypt_file_source_name == -1){
         write(1, ERROR, sizeof(ERROR));
-        close(decFile);
+        close(decrypt_file_source_name);
         return -1;
     }
 
     //opens target file
-    int decDest = open(dest, O_WRONLY|O_CREAT|O_TRUNC, 00700);
-    if(decDest == -1){
+    int decrypt_file_destination = open(dest, O_WRONLY|O_CREAT|O_TRUNC, 00700);
+    if(decrypt_file_destination == -1){
         write(1, ERROR, sizeof(ERROR));
-        close(decFile);
-        close(decDest);
+        close(decrypt_file_source_name);
+        close(decrypt_file_destination);
         return -1;
     }
 
-    //Reads BUFFER_SIZE amount of bytes into the buffer, then decrypts those bytes, then writes those bytes into the destination file. Repeats until no bytes left to read.
+    /*Reads BUFFER_SIZE amount of bytes into the buffer and then decrypts those characters. 
+     *After that it writes those bytes into the destination file. Repeats until no bytes left to read.
+     */    
     char buf[BUFFER_SIZE];
     int count = 0;
-    struct timeval startTime, endTime;
-    gettimeofday(&startTime, 0);
+    struct timeval start_time, end_time;
+    gettimeofday(&start_time, 0);
     int q;
-    while((q = read(decFile, buf, BUFFER_SIZE)) > 0){ 
+    while((q = read(decrypt_file_source_name, buf, BUFFER_SIZE)) > 0){ 
         for(int i = 0; i < q; i++){
             buf[i] = buf[i] - 100;
         }
-        write(decDest, buf, q);
+        write(decrypt_file_destination, buf, q);
         count += 2;
     }
-    gettimeofday(&endTime, 0);
-    long startT = (startTime.tv_sec * 1000000) + startTime.tv_usec;
-    long endT = (endTime.tv_sec * 1000000) + endTime.tv_usec;
-    long diff = endT - startT;
+    gettimeofday(&end_time, 0);
+    long start_time_micro = (start_time.tv_sec * 1000000) + start_time.tv_usec;
+    long end_time_micro = (end_time.tv_sec * 1000000) + end_time.tv_usec;
+    long diff = end_time_micro - start_time_micro;
     printf("Read & Write calls: %d\nIt took %ld microseconds\n", count, diff);
-    close(decFile);
-    close(decDest);
+    close(decrypt_file_source_name);
+    close(decrypt_file_destination);
     return 0;
 }
 
@@ -114,19 +123,18 @@ int main(int argc, char** argv)
     }
 
     //sets the rest of the array to null
-    int z = i;
-    while(z < 128){
+    while(i < 128){
         output_file_name[i] = '\0';
-        z++;
+        i++;
     }
 
     //Determines what mode to run the program with
-    if(argv[1] == "-e"){
+    if(strcmp("-e", argv[1]) == 0){
         strcat(output_file_name, "_enc.txt");
-        return fileEncrypt(argv[2], output_file_name);
-    }else if(argv[1] == "-d"){
+        return file_encrypt(argv[2], output_file_name);
+    }else if(strcmp("-d", argv[1]) == 0){
         strcat(output_file_name, "_dec.txt");
-        return fileEncrypt(argv[2], output_file_name);
+        return file_decrypt(argv[2], output_file_name);
     }else{
         write(1, ERROR, sizeof(ERROR));
         return -1;
