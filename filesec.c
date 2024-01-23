@@ -7,6 +7,7 @@
 
 #define ERROR "Usage:\n./filesec -e|-d [filename.txt]\n"
 #define BUFFER_SIZE 1000
+#define READ_WRITE_CALLS "Read & Write calls: "
 
 //encrypts the file, returns -1 on failure, 0 on success
 int fileEncrypt(char* encName, char* dest){
@@ -14,7 +15,7 @@ int fileEncrypt(char* encName, char* dest){
     //opens the file that we will encrypt
     int encFile = open(encName, O_RDONLY);
     if(encFile == -1){
-        printf("%s", ERROR);
+        write(1, ERROR, sizeof(ERROR));
         close(encFile);
         return -1;
     }
@@ -22,7 +23,7 @@ int fileEncrypt(char* encName, char* dest){
     //opens the target file
     int encDest = open(dest, O_WRONLY|O_CREAT|O_TRUNC, 00700);
     if(encDest == -1){
-        printf("%s", ERROR);
+        write(1, ERROR, sizeof(ERROR));
         close(encFile);
         close(encDest);
         return -1;
@@ -57,7 +58,7 @@ int fileDecrypt(char* decName, char* dest){
     //opens source file
     int decFile = open(decName, O_RDONLY);
     if(decFile == -1){
-        printf("%s", ERROR);
+        write(1, ERROR, sizeof(ERROR));
         close(decFile);
         return -1;
     }
@@ -65,7 +66,7 @@ int fileDecrypt(char* decName, char* dest){
     //opens target file
     int decDest = open(dest, O_WRONLY|O_CREAT|O_TRUNC, 00700);
     if(decDest == -1){
-        printf("%s", ERROR);
+        write(1, ERROR, sizeof(ERROR));
         close(decFile);
         close(decDest);
         return -1;
@@ -101,7 +102,7 @@ int main(int argc, char** argv)
 
     //Checks to see that there are exactly 3 arguments
     if(argc != 3){
-        printf("%s", ERROR);
+        write(1, ERROR, sizeof(ERROR));
         return -1;
     }
 
@@ -113,27 +114,21 @@ int main(int argc, char** argv)
     }
 
     //sets the rest of the array to null
-    while(i < 128){
+    int z = i;
+    while(z < 128){
         output_file_name[i] = '\0';
-        i++;
+        z++;
     }
 
-    //Determins which flag the program was run with
-    int opt;
-    while((opt = getopt(argc, argv, "e:d:")) != -1){
-        switch (opt){
-            case 'e':
-                strcat(output_file_name, "_enc.txt");
-                return fileEncrypt(argv[2], output_file_name);
-                break;
-            case 'd':
-                strcat(output_file_name, "_dec.txt");
-                return fileDecrypt(argv[2], output_file_name);
-                break;
-            case '?':
-                printf("%s", ERROR);
-                return -1;
-        }
+    //Determines what mode to run the program with
+    if(argv[1] == "-e"){
+        strcat(output_file_name, "_enc.txt");
+        return fileEncrypt(argv[2], output_file_name);
+    }else if(argv[1] == "-d"){
+        strcat(output_file_name, "_dec.txt");
+        return fileEncrypt(argv[2], output_file_name);
+    }else{
+        return -1;
     }
 
     return 0;
