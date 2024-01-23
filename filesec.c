@@ -128,6 +128,7 @@ int main(int argc, char** argv)
         strcat(output_file_name, "_dec.txt");
         return fileEncrypt(argv[2], output_file_name);
     }else{
+        write(1, ERROR, sizeof(ERROR));
         return -1;
     }
 
