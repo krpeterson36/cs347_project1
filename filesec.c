@@ -28,23 +28,26 @@ int fileEncrypt(char* encName, char* dest){
     }
 
     //Read's one bit at a time into unEnc, then adds 100 to it and saves it to enc, then writes 1 bit from enc to destFile
-    int buffSize = 1; 
-    char unEnc[buffSize];
-    char enc[buffSize];
-    for(int i = 0; i < buffSize; i++){
+    int buffSize = 100; 
+    char unEnc[1000];
+    char enc[1000];
+    /*for(int i = 0; i < buffSize; i++){
         unEnc[i] = 0;
         enc[i] = 0;
-    }
-    int count = 0;
+    }*/
+    int count = 1;
     struct timeval startTime, endTime;
     gettimeofday(&startTime, 0);
-    while(read(encFile, unEnc, buffSize) > 0){ 
-        for(int i = 0; i < buffSize; i++){
+    int q;
+    int x = 0;
+    while((q = read(encFile, unEnc, buffSize)) > 0){ 
+        for(int i = x; i < x+q; i++){
             enc[i] = unEnc[i] + 100;
         }
-        write(encDest, enc, buffSize);
+        x = x + q;
         count++;
     }
+    write(encDest, enc, x);
     gettimeofday(&endTime, 0);
     long sec = endTime.tv_sec - startTime.tv_sec;
     long milliSec = endTime.tv_usec - startTime.tv_usec;
@@ -75,23 +78,26 @@ int fileDecrypt(char* decName, char* dest){
     }
 
     //reads 1 bit from source file to unDec, decrements unDec by 100 and stores in dec, reads 1 bit from dec to destFile
-    int buffSize = 1;
-    char unDec[buffSize];
-    char dec[buffSize];
-    for(int i = 0; i < buffSize; i++){
+    int buffSize = 100;
+    char unDec[1000];
+    char dec[1000];
+    /*for(int i = 0; i < 1000; i++){
         unDec[i] = 0;
         dec[i] = 0;
-    }
-    int count = 0;
+    }*/
+    int count = 1;
     struct timeval startTime, endTime;
     gettimeofday(&startTime, 0);
-    while(read(decFile, unDec, buffSize) > 0){ 
-        for(int i = 0; i < buffSize; i++){
+    int q;
+    int x = 0;
+    while((q = read(decFile, unDec, buffSize)) > 0){ 
+        for(int i = x; i < x+q; i++){
             dec[i] = unDec[i] - 100;
         }
-        write(decDest, dec, buffSize);
+        x = x + q;
         count++;
     }
+    write(decDest, dec, x);
     gettimeofday(&endTime, 0);
     long sec = endTime.tv_sec - startTime.tv_sec;
     long milliSec = endTime.tv_usec - startTime.tv_usec;
