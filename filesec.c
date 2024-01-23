@@ -28,29 +28,24 @@ int fileEncrypt(char* encName, char* dest){
         return -1;
     }
 
-    //Reads BUFFER_SIZE amount of bytes into the unEnc buffer, then encrypts those bytes into the enc array, then writes those bytes into the destination file. Repeats until no bytes left to read.
-    char unEnc[BUFFER_SIZE];
-    char enc[BUFFER_SIZE];
+    //Reads BUFFER_SIZE amount of bytes into the buffer, then encrypts those bytes, then writes those bytes into the destination file. Repeats until no bytes left to read.
+    char buf[BUFFER_SIZE];
     int count = 0;
     struct timeval startTime, endTime;
     gettimeofday(&startTime, 0);
     int q;
-    while((q = read(encFile, unEnc, BUFFER_SIZE)) > 0){ 
+    while((q = read(encFile, buf, BUFFER_SIZE)) > 0){ 
         for(int i = 0; i < q; i++){
-            enc[i] = unEnc[i] + 100;
+            buf[i] = buf[i] + 100;
         }
-        write(encDest, enc, q);
+        write(encDest, buf, q);
         count += 2;
     }
     gettimeofday(&endTime, 0);
-    long sec = endTime.tv_sec - startTime.tv_sec;
-    long milliSec;
-    if(sec == 0){
-        milliSec = endTime.tv_usec - startTime.tv_usec;
-    }else{
-        milliSec = endTime.tv_usec - startTime.tv_usec + (1000000 * sec);
-    }
-    printf("Read & Write calls: %d\nIt took %ld seconds and %ld microseconds\n", count, sec, milliSec);
+    long startT = (startTime.tv_sec * 1000000) + startTime.tv_usec;
+    long endT = (endTime.tv_sec * 1000000) + endTime.tv_usec;
+    long diff = endT - startT;
+    printf("Read & Write calls: %d\nIt took %ld microseconds\n", count, diff);
     close(encFile);
     close(encDest);
     return 0;
@@ -76,29 +71,24 @@ int fileDecrypt(char* decName, char* dest){
         return -1;
     }
 
-    //Reads BUFFER_SIZE amount of bytes into the unDec buffer, then decrypts those bytes into the dec array, then writes those bytes into the destination file. Repeats until no bytes left to read.
-    char unDec[BUFFER_SIZE];
-    char dec[BUFFER_SIZE];
+    //Reads BUFFER_SIZE amount of bytes into the buffer, then decrypts those bytes, then writes those bytes into the destination file. Repeats until no bytes left to read.
+    char buf[BUFFER_SIZE];
     int count = 0;
     struct timeval startTime, endTime;
     gettimeofday(&startTime, 0);
     int q;
-    while((q = read(decFile, unDec, BUFFER_SIZE)) > 0){ 
+    while((q = read(decFile, buf, BUFFER_SIZE)) > 0){ 
         for(int i = 0; i < q; i++){
-            dec[i] = unDec[i] - 100;
+            buf[i] = buf[i] - 100;
         }
-        write(decDest, dec, q);
+        write(decDest, buf, q);
         count += 2;
     }
     gettimeofday(&endTime, 0);
-    long sec = endTime.tv_sec - startTime.tv_sec;
-    long milliSec;
-    if(sec == 0){
-        milliSec = endTime.tv_usec - startTime.tv_usec;
-    }else{
-        milliSec = endTime.tv_usec - startTime.tv_usec + (1000000* sec);
-    }
-    printf("Read & Write calls: %d\nIt took %ld seconds and %ld microseconds\n", count, sec, milliSec);
+    long startT = (startTime.tv_sec * 1000000) + startTime.tv_usec;
+    long endT = (endTime.tv_sec * 1000000) + endTime.tv_usec;
+    long diff = endT - startT;
+    printf("Read & Write calls: %d\nIt took %ld microseconds\n", count, diff);
     close(decFile);
     close(decDest);
     return 0;
