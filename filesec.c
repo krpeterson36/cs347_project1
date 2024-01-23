@@ -28,20 +28,21 @@ int fileEncrypt(char* encName, char* dest){
     }
 
     //Read's one bit at a time into unEnc, then adds 100 to it and saves it to enc, then writes 1 bit from enc to destFile
-    char unEnc[9];
-    char enc[9];
-    for(int i = 0; i < 9; i++){
+    int buffSize = 1; 
+    char unEnc[buffSize];
+    char enc[buffSize];
+    for(int i = 0; i < buffSize; i++){
         unEnc[i] = 0;
         enc[i] = 0;
     }
     int count = 0;
     struct timeval startTime, endTime;
     gettimeofday(&startTime, 0);
-    while(read(encFile, unEnc, 9) > 0){ 
-        for(int i = 0; i < 9; i++){
+    while(read(encFile, unEnc, buffSize) > 0){ 
+        for(int i = 0; i < buffSize; i++){
             enc[i] = unEnc[i] + 100;
         }
-        write(encDest, enc, 9);
+        write(encDest, enc, buffSize);
         count++;
     }
     gettimeofday(&endTime, 0);
@@ -74,20 +75,21 @@ int fileDecrypt(char* decName, char* dest){
     }
 
     //reads 1 bit from source file to unDec, decrements unDec by 100 and stores in dec, reads 1 bit from dec to destFile
-    char unDec[9];
-    char dec[9];
-    for(int i = 0; i < 9; i++){
+    int buffSize = 1;
+    char unDec[buffSize];
+    char dec[buffSize];
+    for(int i = 0; i < buffSize; i++){
         unDec[i] = 0;
         dec[i] = 0;
     }
     int count = 0;
     struct timeval startTime, endTime;
     gettimeofday(&startTime, 0);
-    while(read(decFile, unDec, 9) > 0){ 
-        for(int i = 0; i < 9; i++){
+    while(read(decFile, unDec, buffSize) > 0){ 
+        for(int i = 0; i < buffSize; i++){
             dec[i] = unDec[i] - 100;
         }
-        write(decDest, dec, 9);
+        write(decDest, dec, buffSize);
         count++;
     }
     gettimeofday(&endTime, 0);
