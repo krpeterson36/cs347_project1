@@ -28,12 +28,26 @@ int fileEncrypt(char* encName, char* dest){
     }
 
     //Read's one bit at a time into unEnc, then adds 100 to it and saves it to enc, then writes 1 bit from enc to destFile
-    int unEnc[1];
-    int enc[1];
-    while(read(encFile, unEnc, 1) > 0){ 
-       enc[0] = unEnc[0] + 100;
-       write(encDest, enc, 1);
+    char unEnc[9];
+    char enc[9];
+    for(int i = 0; i < 9; i++){
+        unEnc[i] = 0;
+        enc[i] = 0;
     }
+    int count = 0;
+    struct timeval startTime, endTime;
+    gettimeofday(&startTime, 0);
+    while(read(encFile, unEnc, 9) > 0){ 
+        for(int i = 0; i < 9; i++){
+            enc[i] = unEnc[i] + 100;
+        }
+        write(encDest, enc, 9);
+        count++;
+    }
+    gettimeofday(&endTime, 0);
+    long sec = endTime.tv_sec - startTime.tv_sec;
+    long milliSec = endTime.tv_usec - startTime.tv_usec;
+    printf("Read & Write calls: %d\nIt took %ld seconds and %ld milliseconds\n", count, sec, milliSec);
     close(encFile);
     close(encDest);
     return 0;
@@ -60,12 +74,26 @@ int fileDecrypt(char* decName, char* dest){
     }
 
     //reads 1 bit from source file to unDec, decrements unDec by 100 and stores in dec, reads 1 bit from dec to destFile
-    int unDec[1];
-    int dec[1];
-    while(read(decFile, unDec, 1) > 0){
-        dec[0] = unDec[0]-100;
-        write(decDest, dec, 1);
+    char unDec[9];
+    char dec[9];
+    for(int i = 0; i < 9; i++){
+        unDec[i] = 0;
+        dec[i] = 0;
     }
+    int count = 0;
+    struct timeval startTime, endTime;
+    gettimeofday(&startTime, 0);
+    while(read(decFile, unDec, 9) > 0){ 
+        for(int i = 0; i < 9; i++){
+            dec[i] = unDec[i] - 100;
+        }
+        write(decDest, dec, 9);
+        count++;
+    }
+    gettimeofday(&endTime, 0);
+    long sec = endTime.tv_sec - startTime.tv_sec;
+    long milliSec = endTime.tv_usec - startTime.tv_usec;
+    printf("Read & Write calls: %d\nIt took %ld seconds and %ld milliseconds\n", count, sec, milliSec);
     close(decFile);
     close(decDest);
     return 0;
