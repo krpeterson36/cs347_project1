@@ -5,7 +5,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 
-#define ERROR "./filesec -e|-d [filename.txt]\n"
+#define ERROR "Usage:\n./filesec -e|-d [filename.txt]\n"
 #define BUFFER_SIZE 1000
 
 //encrypts the file, returns -1 on failure, 0 on success
