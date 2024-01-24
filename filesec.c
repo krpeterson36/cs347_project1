@@ -46,11 +46,15 @@ int file_encrypt(char* encrypt_name, char* dest){
         write(encrypt_destination, buf, q);
         count += 2;
     }
+
+    //does time calculations for the experiment
     gettimeofday(&end_time, 0);
     long start_time_micro = (start_time.tv_sec * 1000000) + start_time.tv_usec;
     long end_time_micro = (end_time.tv_sec * 1000000) + end_time.tv_usec;
     long diff = end_time_micro - start_time_micro;
     printf("Read & Write calls: %d\nIt took %ld microseconds\n", count, diff);
+
+    //closes the files
     close(encrypt_file);
     close(encrypt_destination);
     return 0;
@@ -94,11 +98,15 @@ int file_decrypt(char* decrypt_file_source, char* dest){
         write(decrypt_file_destination, buf, q);
         count += 2;
     }
+
+    //does time calculations for experimen
     gettimeofday(&end_time, 0);
     long start_time_micro = (start_time.tv_sec * 1000000) + start_time.tv_usec;
     long end_time_micro = (end_time.tv_sec * 1000000) + end_time.tv_usec;
     long diff = end_time_micro - start_time_micro;
     printf("Read & Write calls: %d\nIt took %ld microseconds\n", count, diff);
+
+    //closes the files
     close(decrypt_file_source_name);
     close(decrypt_file_destination);
     return 0;
